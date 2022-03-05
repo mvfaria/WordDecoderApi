@@ -8,7 +8,7 @@ The API should have two functions - to allow players to start a new game by sett
 
 ## Game Flow / Rules
 
-A list of valid words that may be used by players when setting a word or submitting guesses can be found in the [wordList.csv](Data/wordList.csv).
+A list of valid words that may be used by players when setting a word or submitting guesses can be found in the [wordList.csv](WordDecoderApi/WordDecoder/Data/wordList.csv).
 
 A valid five-letter word is set using the API, starting the game.
 
