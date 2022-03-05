@@ -21,7 +21,7 @@ public class WordDecoderTests
         var application = new WordDecoderApplication();
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess());
+        var resp = await client.GetAsync("/guess/test");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -36,7 +36,8 @@ public class WordDecoderTests
         var client = application.CreateClient();
         var gameResp = await client.GetFromJsonAsync<GameResponse>("/startNewGame");
 
-        Assert.Equal("XXXXX, A new game has started. You have 6 attempts.", gameResp.Message);
+        Assert.Equal("XXXXX", gameResp.Clue);
+        Assert.Equal("A new game has started. You have 6 attempts.", gameResp.Message);
     }
 
     [Fact]
@@ -49,7 +50,7 @@ public class WordDecoderTests
         
         await client.GetFromJsonAsync<GameResponse>("/startNewGame");
         
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = guessWord });
+        var resp = await client.GetAsync($"/guess/{guessWord}");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
@@ -63,11 +64,12 @@ public class WordDecoderTests
         await application.AddGameStateAsync(new GameState { Word = "about" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word= "about" });
+        var resp = await client.GetAsync("/guess/about");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal("YYYYY, Congrats! You won the game.", gameResp.Message);
+        Assert.Equal("YYYYY", gameResp.Clue);
+        Assert.Equal("Congrats! You won the game.", gameResp.Message);
     }
 
     [Fact]
@@ -77,11 +79,12 @@ public class WordDecoderTests
         await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "balmy" });
+        var resp = await client.GetAsync("/guess/balmy");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal($"XXXXX, Try again. You have 2 attempts left.", gameResp.Message);
+        Assert.Equal("XXXXX", gameResp.Clue);
+        Assert.Equal($"Try again. You have 2 attempts left.", gameResp.Message);
     }
 
     [Fact]
@@ -91,11 +94,12 @@ public class WordDecoderTests
         await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "chill" });
+        var resp = await client.GetAsync("/guess/chill");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal($"XHXXX, Try again. You have 2 attempts left.", gameResp.Message);
+        Assert.Equal("XHXXX", gameResp.Clue);
+        Assert.Equal($"Try again. You have 2 attempts left.", gameResp.Message);
     }
 
     [Fact]
@@ -105,11 +109,12 @@ public class WordDecoderTests
         await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "hotel" });
+        var resp = await client.GetAsync("/guess/hotel");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal($"YYXHX, Try again. You have 2 attempts left.", gameResp.Message);
+        Assert.Equal("YYXHX", gameResp.Clue);
+        Assert.Equal($"Try again. You have 2 attempts left.", gameResp.Message);
     }
 
     [Fact]
@@ -119,13 +124,14 @@ public class WordDecoderTests
         await application.AddGameStateAsync(new GameState { Attempts = 1, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "balmy" });
+        var resp = await client.GetAsync("/guess/balmy");
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
-        Assert.Equal("XXXXX, You have no more attempts left, please start a new game.", gameResp.Message);
+        Assert.Equal("XXXXX", gameResp.Clue);
+        Assert.Equal("You have no more attempts left, please start a new game.", gameResp.Message);
 
-        var secondResp = await client.PostAsJsonAsync("/guess", new Guess());
+        var secondResp = await client.GetAsync("/guess/any");
         var secondGameResp = await secondResp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, secondResp.StatusCode);

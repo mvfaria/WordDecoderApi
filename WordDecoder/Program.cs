@@ -34,11 +34,10 @@ app.MapGet("/startNewGame", async (WordDecoderDb db, IWordRepository wordRepo) =
     await db.GameStates.AddAsync(gameState);
     await db.SaveChangesAsync();
 
-    return Results.Ok(new GameResponse($"XXXXX, A new game has started. You have {gameState.Attempts} attempts."));
+    return Results.Ok(new GameResponse($"A new game has started. You have {gameState.Attempts} attempts.", "XXXXX"));
 });
 
-
-app.MapPost("/guess", async (WordDecoderDb db, IWordRepository wordRepo, Guess guess) =>
+app.MapGet("/guess/{word}", async (WordDecoderDb db, IWordRepository wordRepo, string word) =>
 {
     var gameState = await db.GameStates.FirstOrDefaultAsync();
     if (gameState is null)
@@ -46,10 +45,10 @@ app.MapPost("/guess", async (WordDecoderDb db, IWordRepository wordRepo, Guess g
         return Results.Ok(new GameResponse("Please start a new game."));
     }
 
-    var guessWord = guess.Word.ToLower();
+    var guessWord = word.ToLower();
     if (!wordRepo.Contains(guessWord))
     {
-        return Results.BadRequest(new GameResponse($"The word {guess.Word} is not valid."));
+        return Results.BadRequest(new GameResponse($"The word {word} is not valid."));
     }
 
     if (guessWord == gameState.Word)
@@ -57,12 +56,12 @@ app.MapPost("/guess", async (WordDecoderDb db, IWordRepository wordRepo, Guess g
         db.GameStates.Remove(gameState);
         await db.SaveChangesAsync();
 
-        return Results.Ok(new GameResponse("YYYYY, Congrats! You won the game."));
+        return Results.Ok(new GameResponse("Congrats! You won the game.", "YYYYY"));
     }
 
     gameState.Attempts--;
 
-    var msg = $"{GetClue(guessWord, gameState.Word)}, ";
+    var msg = "";
     if (gameState.Attempts == 0)
     {
         db.GameStates.Remove(gameState);
@@ -76,7 +75,7 @@ app.MapPost("/guess", async (WordDecoderDb db, IWordRepository wordRepo, Guess g
 
     await db.SaveChangesAsync();
 
-    return Results.Ok(new GameResponse(msg));
+    return Results.Ok(new GameResponse(msg, GetClue(guessWord, gameState.Word)));
 });
 
 app.Run();
