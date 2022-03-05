@@ -27,7 +27,7 @@ They receive an affirmative response to the request that contains:
 
 X = letter is not in word
 
-H =letter is in word, but incorrect spot
+H = letter is in word, but incorrect spot
 
 Y = letter is in word, in correct spot
 
@@ -68,3 +68,6 @@ If the game word is RADII:
 - Startup from WordDecoderApi project
 - While in devopment environment you can consume the API through the Swagger UI
 - Alternatively download [Postman](https://www.postman.com/downloads/) and import the [WordDecoder collection](WordDecoder.postman_collection.json).
+- Should you have cURL installed you could also consume the API as per below:
+    - Star New Game: `curl -X 'GET' 'https://localhost:7050/startNewGame' -H 'accept: */*'`
+    - Guess: `curl -X 'GET' 'https://localhost:7050/guess/{word}' -H 'accept: */*'`
