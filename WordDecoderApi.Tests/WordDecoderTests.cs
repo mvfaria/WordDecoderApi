@@ -40,23 +40,30 @@ public class WordDecoderTests
     }
 
     [Fact]
-    public async Task CorrectGuessEndsTheGameAsync()
+    public async Task GuessIsNotAValidWordAsync()
     {
         var application = new WordDecoderApplication();
 
-        using (var scope = application.Services.CreateScope())
-        {
-            var provider = scope.ServiceProvider;
-            using (var context = provider.GetRequiredService<WordDecoderDb>())
-            {
-                await context.Database.EnsureCreatedAsync();
-                await context.GameStates.AddAsync(new GameState { Word = "HOUSE" });
-                await context.SaveChangesAsync();
-            }
-        }
+        var guessWord = "ZZZZZ";
+        var client = application.CreateClient();
+        
+        await client.GetFromJsonAsync<GameResponse>("/startNewGame");
+        
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = guessWord });
+        var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
+
+        Assert.Equal(HttpStatusCode.BadRequest, resp.StatusCode);
+        Assert.Equal($"The word {guessWord} is not valid.", gameResp.Message);
+    }
+
+    [Fact]
+    public async Task TheGameEndsWhenGuessIsCorrectAsync()
+    {
+        var application = new WordDecoderApplication();
+        await application.AddGameStateAsync(new GameState { Word = "about" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word="HOUSE"});
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word= "about" });
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -67,20 +74,10 @@ public class WordDecoderTests
     public async Task LetterIsNotInWordAsync()
     {
         var application = new WordDecoderApplication();
-
-        using (var scope = application.Services.CreateScope())
-        {
-            var provider = scope.ServiceProvider;
-            using (var context = provider.GetRequiredService<WordDecoderDb>())
-            {
-                await context.Database.EnsureCreatedAsync();
-                await context.GameStates.AddAsync(new GameState { Attempts = 3, Word = "HOUSE" });
-                await context.SaveChangesAsync();
-            }
-        }
+        await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "BALMY" });
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "balmy" });
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -91,20 +88,10 @@ public class WordDecoderTests
     public async Task LetterIsInWordButIncorrectSpotAsync()
     {
         var application = new WordDecoderApplication();
-
-        using (var scope = application.Services.CreateScope())
-        {
-            var provider = scope.ServiceProvider;
-            using (var context = provider.GetRequiredService<WordDecoderDb>())
-            {
-                await context.Database.EnsureCreatedAsync();
-                await context.GameStates.AddAsync(new GameState { Attempts = 3, Word = "HOUSE" });
-                await context.SaveChangesAsync();
-            }
-        }
+        await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "CHILL" });
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "chill" });
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -115,20 +102,10 @@ public class WordDecoderTests
     public async Task LetterIsInWordInCorrectSpotAsync()
     {
         var application = new WordDecoderApplication();
-
-        using (var scope = application.Services.CreateScope())
-        {
-            var provider = scope.ServiceProvider;
-            using (var context = provider.GetRequiredService<WordDecoderDb>())
-            {
-                await context.Database.EnsureCreatedAsync();
-                await context.GameStates.AddAsync(new GameState { Attempts = 3, Word = "HOUSE" });
-                await context.SaveChangesAsync();
-            }
-        }
+        await application.AddGameStateAsync(new GameState { Attempts = 3, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "HOTEL" });
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "hotel" });
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -139,20 +116,10 @@ public class WordDecoderTests
     public async Task TheGameEndsWhenThereIsNoAttemptsLeftAsync()
     {
         var application = new WordDecoderApplication();
-
-        using (var scope = application.Services.CreateScope())
-        {
-            var provider = scope.ServiceProvider;
-            using (var context = provider.GetRequiredService<WordDecoderDb>())
-            {
-                await context.Database.EnsureCreatedAsync();
-                await context.GameStates.AddAsync(new GameState { Attempts = 1, Word = "HOUSE" });
-                await context.SaveChangesAsync();
-            }
-        }
+        await application.AddGameStateAsync(new GameState { Attempts = 1, Word = "house" });
 
         var client = application.CreateClient();
-        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "BALMY" });
+        var resp = await client.PostAsJsonAsync("/guess", new Guess { Word = "balmy" });
         var gameResp = await resp.Content.ReadFromJsonAsync<GameResponse>();
 
         Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
@@ -181,5 +148,19 @@ class WordDecoderApplication : WebApplicationFactory<Program>
         });
 
         return base.CreateHost(builder);
+    }
+
+    internal async Task AddGameStateAsync(GameState state)
+    {
+        using (var scope = Services.CreateScope())
+        {
+            var provider = scope.ServiceProvider;
+            using (var context = provider.GetRequiredService<WordDecoderDb>())
+            {
+                await context.Database.EnsureCreatedAsync();
+                await context.GameStates.AddAsync(state);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }
