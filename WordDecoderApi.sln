@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9C5EE227-728A-441F-8FC6-CDD958C0E089}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		WordDecoder.postman_collection.json = WordDecoder.postman_collection.json
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WordDecoderApi.Tests", "WordDecoderApi.Tests\WordDecoderApi.Tests.csproj", "{5A827DE5-173F-4434-8396-8024735A7252}"

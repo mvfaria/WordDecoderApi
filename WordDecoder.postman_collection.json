@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "33861d14-bb01-44b2-926b-da01d3d0deb5",
+		"name": "WordDecoder",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "StartNewGame",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURI}}/startNewGame",
+					"host": [
+						"{{baseURI}}"
+					],
+					"path": [
+						"startNewGame"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Guess Word",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURI}}/guess/:word",
+					"host": [
+						"{{baseURI}}"
+					],
+					"path": [
+						"guess",
+						":word"
+					],
+					"variable": [
+						{
+							"key": "word",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURI",
+			"value": "https://localhost:7050"
+		}
+	]
+}
