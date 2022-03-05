@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WordDecoderApi.Model;
 
-namespace WordDecoderApi.Repositories;
+namespace WordDecoderApi.Data;
 
 public class WordDecoderDb : DbContext
 {

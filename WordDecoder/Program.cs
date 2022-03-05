@@ -1,6 +1,7 @@
-using WordDecoderApi;
 using WordDecoderApi.Repositories;
 using Microsoft.EntityFrameworkCore;
+using WordDecoderApi.Data;
+using WordDecoderApi.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
