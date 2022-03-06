@@ -59,15 +59,42 @@ If the game word is RADII:
 - ASP.NET 6 Minimal API
 - Swagger/OpenAPI
 - In-Memory EF Core 6
-- xUnit
+- xUnit (Integrations Tests)
+- Docker
 
 ## Get Started
 
+### Visual Studio
 - Open the solution on Visual Studio
-- Build and Restore Package
+- Restore packages and build solution
 - Startup from WordDecoderApi project
-- While in devopment environment you can consume the API through the Swagger UI
-- Alternatively download [Postman](https://www.postman.com/downloads/) and import the [WordDecoder collection](WordDecoder.postman_collection.json).
-- Should you have cURL installed you could also consume the API as per below:
+
+### .NET CLI
+From the WordDecoderApi project directory run the following commands:
+- `dotnet restore`
+- `dotnet build`
+- `dotnet run`
+
+### Docker (Production only)
+For a cross-platform and more production like experience please download and install [Docker](https://www.docker.com/products/docker-desktop) and run the following commands from your terminal:
+- `docker run --name decoder -p 8080:80 -d mvfaria/worddecoderapi`
+
+## Play
+
+### Swagger UI
+Once the API is up and running in devopment environment, you can play through the Swagger UI.
+
+### Postman
+Alternatively, download [Postman](https://www.postman.com/downloads/) and import the [WordDecoder collection](WordDecoder.postman_collection.json).
+The collection supports both environments, development and production (Docker).
+
+### cURL
+Should you have cURL installed you could also consume the API as per below:
+
+- Development:
     - Star New Game: `curl -X 'GET' 'https://localhost:7050/startNewGame' -H 'accept: */*'`
     - Guess: `curl -X 'GET' 'https://localhost:7050/guess/{word}' -H 'accept: */*'`
+
+- Production (Docker):
+    - Star New Game: `curl -X 'GET' 'https://localhost:8080/startNewGame' -H 'accept: */*'`
+    - Guess: `curl -X 'GET' 'https://localhost:8080/guess/{word}' -H 'accept: */*'`
