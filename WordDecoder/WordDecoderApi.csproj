@@ -16,4 +16,10 @@
     <InternalsVisibleTo Include="WordDecoderApi.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\wordList.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
