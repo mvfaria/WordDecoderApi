@@ -56,7 +56,7 @@ If the game word is RADII:
 
 ## Tech Stack
 
-- ASP.NET 6 Minimal API
+- ASP.NET Core 6 Minimal Web API
 - Swagger/OpenAPI
 - In-Memory EF Core 6
 - xUnit (Integrations Tests)
